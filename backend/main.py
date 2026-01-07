@@ -5,13 +5,18 @@ import hashlib
 import random
 from typing import List, Dict, Any, Optional
 from fastapi import FastAPI, Depends, HTTPException, status, Response
-from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
 
-from . import models, schemas, database, ai_service
+try:
+    from . import models, schemas, database, ai_service
+except ImportError:
+    import models  # type: ignore
+    import schemas  # type: ignore
+    import database  # type: ignore
+    import ai_service  # type: ignore
 
 # Initialize DB
 models.Base.metadata.create_all(bind=database.engine)
@@ -35,8 +40,14 @@ def get_db():
     finally:
         db.close()
 
+def _questions_file_path() -> str:
+    env_path = os.getenv("QUESTIONS_PATH")
+    if isinstance(env_path, str) and env_path.strip():
+        return env_path.strip()
+    return os.path.join(os.path.dirname(__file__), "resources", "questions.json")
+
 def _load_draft_bank() -> List[Dict[str, Any]]:
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "questions.json")
+    file_path = _questions_file_path()
     if not os.path.exists(file_path):
         return []
     with open(file_path, "r") as f:
@@ -49,7 +60,8 @@ def _load_draft_bank() -> List[Dict[str, Any]]:
     return [q for q in data if isinstance(q, dict)]
 
 def _save_draft_bank(data: List[Dict[str, Any]]) -> None:
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "questions.json")
+    file_path = _questions_file_path()
+    os.makedirs(os.path.dirname(os.path.abspath(file_path)), exist_ok=True)
     with open(file_path, "w") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
@@ -376,9 +388,9 @@ def normalize_drafts(default_topic: str = "Calculus"):
 @app.post("/api/admin/save_drafts")
 def save_drafts(questions: List[Dict[str, Any]]):
     """
-    Appends new questions to questions.json (Draft Bank).
+    Appends new questions to the draft bank JSON.
     """
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "questions.json")
+    file_path = _questions_file_path()
     
     current_data = []
     if os.path.exists(file_path):
@@ -414,22 +426,22 @@ def save_drafts(questions: List[Dict[str, Any]]):
 @app.post("/api/admin/freeze")
 def freeze_question_bank(db: Session = Depends(get_db)):
     """
-    Freezes the current questions.json into the SQLite DB as a new version.
+    Freezes the current draft bank JSON into the SQLite DB as a new version.
     """
-    file_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "questions.json")
+    file_path = _questions_file_path()
     if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="questions.json not found")
+        raise HTTPException(status_code=404, detail="Question bank JSON not found")
         
     with open(file_path, "r") as f:
         content = f.read()
         try:
             data = json.loads(content)
         except json.JSONDecodeError:
-            raise HTTPException(status_code=400, detail="questions.json is not valid JSON")
+            raise HTTPException(status_code=400, detail="Question bank JSON is not valid JSON")
         data = [q for q in data if isinstance(q, dict)]
         data = [q for q in data if not q.get("is_fallback")]
         if not data:
-            raise HTTPException(status_code=400, detail="questions.json is empty or only contains fallback items")
+            raise HTTPException(status_code=400, detail="Question bank JSON is empty or only contains fallback items")
         
     # Generate Version ID (Hash of content)
     version_id = hashlib.md5(content.encode()).hexdigest()[:8]
@@ -440,7 +452,7 @@ def freeze_question_bank(db: Session = Depends(get_db)):
         return {"message": "Version already exists", "version_id": version_id}
         
     # Create Version
-    new_version = models.QuestionBankVersion(version_id=version_id, description="Imported from questions.json")
+    new_version = models.QuestionBankVersion(version_id=version_id, description="Imported from question bank JSON")
     db.add(new_version)
     
     # Bulk Insert Questions
@@ -894,8 +906,17 @@ def vite_client_encoded():
 def vite_client_encoded_head():
     return Response(status_code=204)
 
-# Serve Static
-static_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "static")
-if os.path.exists(static_dir):
-    app.mount("/static", StaticFiles(directory=static_dir, html=False), name="static_assets")
-    app.mount("/", StaticFiles(directory=static_dir, html=True), name="static")
+def _truthy_env(name: str) -> bool:
+    v = os.getenv(name)
+    if not isinstance(v, str):
+        return False
+    return v.strip().lower() in {"1", "true", "yes", "on"}
+
+
+if _truthy_env("SERVE_FRONTEND"):
+    from fastapi.staticfiles import StaticFiles
+
+    frontend_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend")
+    if os.path.exists(frontend_dir):
+        app.mount("/static", StaticFiles(directory=frontend_dir, html=False), name="static_assets")
+        app.mount("/", StaticFiles(directory=frontend_dir, html=True), name="static")

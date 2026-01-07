@@ -24,7 +24,7 @@ TECH STACK (use exactly this)
 - Backend: Python + FastAPI
 - Frontend: plain HTML + vanilla JavaScript (no framework)
 - Data: SQLite (single local file). Use SQLAlchemy or sqlite3.
-- Question bank source: a local JSON file (questions.json) stored in the project.
+- Question bank source: a local JSON file (backend/resources/questions.json) stored in the project.
 - AI call: implement a stub function analyze_wrong_answer(); also provide an optional real API integration placeholder with environment variables.
 
 DELIVERABLES
@@ -32,14 +32,14 @@ You must output:
 A) Folder structure
 B) Full backend code (runnable) with clear instructions
 C) Full frontend code (runnable)
-D) A sample questions.json question bank
+D) A sample question bank JSON
 E) Database schema and migration/initialization steps
 F) A runbook: how to install, run, and test
 G) A minimal set of test cases / sample requests
 
 FUNCTIONAL DETAILS (MUST IMPLEMENT)
 1) Question Bank
-- Load from questions.json at startup.
+- Load from backend/resources/questions.json at startup.
 - Provide an endpoint to list questions (for paper generation) but DO NOT expose correct answers to student UI.
 - Include question metadata: id, stem, type, correct_answer, tolerance(optional), topic, difficulty, reference_outline, isomorphic_group(optional), knowledge_points(optional).
 - Provide a version string for the question bank (e.g., hash of file or manual version field).
@@ -138,5 +138,5 @@ START OUTPUT NOW
 1) First output folder structure.
 2) Then provide all backend files content.
 3) Then provide frontend files content.
-4) Then provide questions.json sample.
+4) Then provide question bank JSON sample.
 5) Finally provide runbook and test steps.

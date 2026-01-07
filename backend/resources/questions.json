@@ -573,5 +573,21 @@
     ],
     "isomorphic_group": "subject_verb_agreement",
     "topic": "english"
+  },
+  {
+    "additionalProp1": {},
+    "id": "bbe89abfcf5e433a845006b0281db3b8",
+    "topic": "未分类",
+    "type": "short_answer",
+    "correct_answer": "",
+    "knowledge_points": []
+  },
+  {
+    "additionalProp1": {},
+    "id": "4b12315c09ca4db7a98ce638d9f5f56f",
+    "topic": "未分类",
+    "type": "short_answer",
+    "correct_answer": "",
+    "knowledge_points": []
   }
 ]

@@ -1,7 +1,10 @@
 from sqlalchemy import Column, String, Integer, Float, ForeignKey, DateTime, JSON, Boolean, Text, UniqueConstraint
 from sqlalchemy.orm import relationship
 from datetime import datetime
-from .database import Base
+try:
+    from .database import Base
+except ImportError:
+    from database import Base  # type: ignore
 
 class QuestionBankVersion(Base):
     __tablename__ = "question_bank_versions"

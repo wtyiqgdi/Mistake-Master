@@ -210,7 +210,7 @@
                         <div class="panel-header">
                             <div>
                                 <h3>锁定版本</h3>
-                                <div class="meta">把 questions.json 导入数据库生成可追溯版本</div>
+                                <div class="meta">把 backend/resources/questions.json 导入数据库生成可追溯版本</div>
                             </div>
                         </div>
                         <div class="actions">
@@ -230,7 +230,7 @@
     </div>
 
     <script>
-        const API_BASE = '/api';
+        const API_BASE = 'http://127.0.0.1:8000/api';
         let generatedQuestions = [];
 
         const navButtons = Array.from(document.querySelectorAll('.admin-nav button[data-panel]'));
@@ -633,7 +633,7 @@
 
         normalizeBtn.addEventListener('click', async () => {
             const t = defaultTopicInput.value.trim() || 'Calculus';
-            if (!confirm(`Normalize existing drafts with default topic "${t}"? This will rewrite questions.json.`)) return;
+            if (!confirm(`Normalize existing drafts with default topic "${t}"? This will rewrite backend/resources/questions.json.`)) return;
             try {
                 const res = await fetch(`${API_BASE}/admin/drafts/normalize?default_topic=${encodeURIComponent(t)}`, { method: 'POST' });
                 if (!res.ok) throw new Error(await res.text());
@@ -741,7 +741,7 @@
         }
 
         saveBtn.addEventListener('click', async () => {
-            if (!confirm('Append these questions to questions.json?')) return;
+            if (!confirm('Append these questions to backend/resources/questions.json?')) return;
 
             try {
                 const response = await fetch(`${API_BASE}/admin/save_drafts`, {
@@ -772,7 +772,7 @@
         });
 
         freezeBtn.addEventListener('click', async () => {
-            if (!confirm('This will LOCK the current questions.json into a new database version. Continue?')) return;
+            if (!confirm('This will LOCK the current backend/resources/questions.json into a new database version. Continue?')) return;
 
             try {
                 const response = await fetch(`${API_BASE}/admin/freeze`, { method: 'POST' });

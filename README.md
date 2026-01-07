@@ -24,7 +24,7 @@ A reproducible, AI-assisted testing platform for educational research.
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 ```
 
 ### 2. Configuration
@@ -35,7 +35,7 @@ export DEEPSEEK_API_KEY="sk-..."
 *(If no key is provided, the system falls back to a deterministic stub for testing.)*
 
 ### 3. Initialize Question Bank
-The system loads drafts from `questions.json`. You must "freeze" them to create a usable version.
+The system loads drafts from `backend/resources/questions.json`. You must "freeze" them to create a usable version.
 The system attempts to auto-freeze on the first run, or you can trigger it manually:
 ```bash
 # (Optional) Manually freeze via API
@@ -47,6 +47,23 @@ curl -X POST http://127.0.0.1:8000/api/admin/freeze
 uvicorn backend.main:app --reload
 ```
 Open `http://127.0.0.1:8000`.
+
+## Deployment
+
+### Cloudflare Pages (Frontend)
+- Root directory: `frontend/`
+- Build command: (none)
+- Build output directory: `frontend/`
+
+### Render (FastAPI Backend)
+- Root directory: `backend/`
+- Build command: `pip install -r requirements.txt`
+- Start command: `uvicorn main:app --host 0.0.0.0 --port $PORT`
+- Environment variables:
+  - `DEEPSEEK_API_KEY` (required for real AI calls)
+  - `DB_PATH` (optional; default is `../data/ap_research.db`)
+  - `QUESTIONS_PATH` (optional; default is `resources/questions.json`)
+  - `SERVE_FRONTEND=0` (recommended; keep backend API-only)
 
 ## Usage Guide
 
@@ -63,6 +80,6 @@ Open `http://127.0.0.1:8000`.
 
 ## Project Structure
 *   `backend/`: FastAPI app, SQLAlchemy models, AI service.
-*   `static/`: Vanilla JS frontend.
-*   `questions.json`: Draft question source.
-*   `ap_research.db`: SQLite database (stores locked questions, papers, submissions, logs).
+*   `frontend/`: Vanilla JS frontend (Cloudflare Pages root).
+*   `backend/resources/questions.json`: Draft question source.
+*   `data/`: Local SQLite data directory (ignored by git).
