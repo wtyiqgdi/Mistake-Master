@@ -1,0 +1,577 @@
+[
+  {
+    "id": "1",
+    "stem": "Find the derivative of f(x) = 3x^4 - 2x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 12x^3 - 4x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2",
+    "stem": "What is the limit as x approaches 0 of (sin(3x))/x?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "1"
+      },
+      {
+        "id": "C",
+        "text": "3"
+      },
+      {
+        "id": "D",
+        "text": "Does not exist"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Limit of sin(ax)/x as x→0",
+    "knowledge_points": [
+      "limits",
+      "trigonometric limits"
+    ],
+    "isomorphic_group": "sin_ax_over_x_limit",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3",
+    "stem": "Find the area under the curve y = x^2 from x = 1 to x = 3.",
+    "type": "short_answer",
+    "correct_answer": "26/3",
+    "difficulty": 3,
+    "reference_outline": "Definite integral of polynomial",
+    "knowledge_points": [
+      "definite integral",
+      "area under curve"
+    ],
+    "isomorphic_group": "polynomial_area_integral",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_4ba1",
+    "stem": "Find the derivative of f(x) = 3x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 6x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2_ce51",
+    "stem": "What is the limit as x approaches 2 of (x^2 - 4)/(x - 2)?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "2"
+      },
+      {
+        "id": "C",
+        "text": "4"
+      },
+      {
+        "id": "D",
+        "text": "undefined"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Limit evaluation by factoring",
+    "knowledge_points": [
+      "limits",
+      "factoring",
+      "indeterminate forms"
+    ],
+    "isomorphic_group": "limit_by_factoring",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3_48b8",
+    "stem": "Find the indefinite integral of ∫(2x + 3) dx.",
+    "type": "short_answer",
+    "correct_answer": "x^2 + 3x + C",
+    "difficulty": 1,
+    "reference_outline": "Basic integration rules",
+    "knowledge_points": [
+      "indefinite integral",
+      "power rule for integration"
+    ],
+    "isomorphic_group": "basic_integration",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_30c7",
+    "stem": "Find the derivative of f(x) = 3x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 6x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2_dc57",
+    "stem": "What is the limit as x approaches 0 of (sin(x))/x?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "1"
+      },
+      {
+        "id": "C",
+        "text": "∞"
+      },
+      {
+        "id": "D",
+        "text": "Does not exist"
+      }
+    ],
+    "correct_answer": "B",
+    "difficulty": 3,
+    "reference_outline": "Standard trigonometric limit",
+    "knowledge_points": [
+      "limits",
+      "trigonometric limits",
+      "L'Hôpital's rule"
+    ],
+    "isomorphic_group": "sinx_over_x_limit",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3_71a6",
+    "stem": "Evaluate the definite integral ∫ from 0 to 2 of (x^3 - 2x) dx.",
+    "type": "short_answer",
+    "correct_answer": "0",
+    "difficulty": 3,
+    "reference_outline": "Fundamental theorem of calculus",
+    "knowledge_points": [
+      "definite integral",
+      "antiderivative",
+      "evaluation theorem"
+    ],
+    "isomorphic_group": "polynomial_definite_integral",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_17b8",
+    "stem": "Find the derivative of f(x) = 3x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 6x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule"
+    ],
+    "isomorphic_group": "basic_polynomial_derivative",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2_3c40",
+    "stem": "What is the limit as x approaches 2 of (x^2 - 4)/(x - 2)?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "2"
+      },
+      {
+        "id": "C",
+        "text": "4"
+      },
+      {
+        "id": "D",
+        "text": "undefined"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Limit evaluation by factoring",
+    "knowledge_points": [
+      "limits",
+      "factoring",
+      "indeterminate forms"
+    ],
+    "isomorphic_group": "limit_by_factoring",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3_9aba",
+    "stem": "Find the area under the curve y = 2x from x = 1 to x = 3.",
+    "type": "short_answer",
+    "correct_answer": "8",
+    "difficulty": 1,
+    "reference_outline": "Definite integral of a linear function",
+    "knowledge_points": [
+      "definite integral",
+      "area under curve"
+    ],
+    "isomorphic_group": "linear_integral_area",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_a66d",
+    "stem": "Find the derivative of f(x) = 3x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 6x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule",
+      "polynomial functions"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2_dae6",
+    "stem": "What is the limit as x approaches 0 of (sin(3x))/x?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "1"
+      },
+      {
+        "id": "C",
+        "text": "3"
+      },
+      {
+        "id": "D",
+        "text": "Does not exist"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Limit of sin(ax)/x as x→0",
+    "knowledge_points": [
+      "limits",
+      "trigonometric limits",
+      "L'Hôpital's rule"
+    ],
+    "isomorphic_group": "sin_ax_over_x_limit",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3_30e8",
+    "stem": "Evaluate the definite integral ∫ from 1 to 4 of (2x + 1) dx.",
+    "type": "short_answer",
+    "correct_answer": "18",
+    "difficulty": 1,
+    "reference_outline": "Definite integral of a linear function",
+    "knowledge_points": [
+      "definite integral",
+      "power rule integration",
+      "Fundamental Theorem of Calculus"
+    ],
+    "isomorphic_group": "linear_definite_integral",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_2f45",
+    "stem": "Find the derivative of f(x) = 3x^2 + 5x - 7.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 6x + 5",
+    "difficulty": 1,
+    "reference_outline": "Power rule of differentiation",
+    "knowledge_points": [
+      "derivative",
+      "power rule",
+      "polynomial functions"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "Calculus"
+  },
+  {
+    "id": "2_46d3",
+    "stem": "What is the limit as x approaches 0 of (sin(3x))/x?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "1"
+      },
+      {
+        "id": "C",
+        "text": "3"
+      },
+      {
+        "id": "D",
+        "text": "Does not exist"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Limit involving trigonometric function using standard limit sin(θ)/θ → 1 as θ → 0",
+    "knowledge_points": [
+      "limits",
+      "trigonometric limits",
+      "L'Hôpital's rule alternative"
+    ],
+    "isomorphic_group": "sin_kx_over_x_limit",
+    "topic": "Calculus"
+  },
+  {
+    "id": "3_c74f",
+    "stem": "Compute the definite integral from 0 to 2 of (x^3 - 2x + 1) dx.",
+    "type": "short_answer",
+    "correct_answer": "2",
+    "difficulty": 1,
+    "reference_outline": "Fundamental theorem of calculus - evaluate antiderivative at bounds",
+    "knowledge_points": [
+      "definite integral",
+      "antiderivative",
+      "polynomial integration"
+    ],
+    "isomorphic_group": "basic_polynomial_integral",
+    "topic": "Calculus"
+  },
+  {
+    "id": "1_cae3",
+    "stem": "Find the derivative of f(x) = 3x^4 - 2x^3 + 5x - 7 using the power rule.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 12x^3 - 6x^2 + 5",
+    "difficulty": 2,
+    "reference_outline": "Differentiation rules, power rule application",
+    "knowledge_points": [
+      "derivative definition",
+      "power rule",
+      "polynomial differentiation"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "calculus"
+  },
+  {
+    "id": "2_bb36",
+    "stem": "Evaluate the definite integral: ∫ from 0 to π/2 of sin(x) dx",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "0"
+      },
+      {
+        "id": "B",
+        "text": "1"
+      },
+      {
+        "id": "C",
+        "text": "π/2"
+      },
+      {
+        "id": "D",
+        "text": "2"
+      }
+    ],
+    "correct_answer": "B",
+    "difficulty": 2,
+    "reference_outline": "Basic integration, trigonometric integrals",
+    "knowledge_points": [
+      "definite integrals",
+      "antiderivatives",
+      "fundamental theorem of calculus"
+    ],
+    "isomorphic_group": "basic_trig_integral",
+    "topic": "calculus"
+  },
+  {
+    "id": "3_d6db",
+    "stem": "Use the limit definition of derivative to find f'(x) for f(x) = x^2 at x = 3.",
+    "type": "short_answer",
+    "correct_answer": "f'(3) = 6",
+    "difficulty": 3,
+    "reference_outline": "Limit definition of derivative, algebraic manipulation",
+    "knowledge_points": [
+      "limit definition",
+      "derivative as instantaneous rate of change",
+      "algebraic simplification"
+    ],
+    "isomorphic_group": "limit_definition_derivative",
+    "topic": "calculus"
+  },
+  {
+    "id": "1_87da",
+    "stem": "Find the derivative of f(x) = 3x^4 - 2x^3 + 5x - 7 using the power rule.",
+    "type": "short_answer",
+    "correct_answer": "f'(x) = 12x^3 - 6x^2 + 5",
+    "difficulty": 2,
+    "reference_outline": "Differentiation rules, power rule application",
+    "knowledge_points": [
+      "derivative definition",
+      "power rule",
+      "polynomial differentiation"
+    ],
+    "isomorphic_group": "basic_power_rule",
+    "topic": "calculus"
+  },
+  {
+    "id": "2_3fe6",
+    "stem": "Evaluate the definite integral ∫ from 0 to π/2 of sin(x) dx.",
+    "type": "short_answer",
+    "correct_answer": "1",
+    "difficulty": 2,
+    "reference_outline": "Basic integration, trigonometric integrals",
+    "knowledge_points": [
+      "definite integrals",
+      "antiderivatives",
+      "fundamental theorem of calculus"
+    ],
+    "isomorphic_group": "basic_trig_integrals",
+    "topic": "calculus"
+  },
+  {
+    "id": "3_51ea",
+    "stem": "Which of the following represents the limit definition of the derivative of f(x) at x = a?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "lim(h→0) [f(a+h)-f(a)]/h"
+      },
+      {
+        "id": "B",
+        "text": "lim(x→a) [f(x)-f(a)]/(x-a)"
+      },
+      {
+        "id": "C",
+        "text": "Both A and B"
+      },
+      {
+        "id": "D",
+        "text": "Neither A nor B"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 3,
+    "reference_outline": "Derivative definition, limit concepts",
+    "knowledge_points": [
+      "limit definition of derivative",
+      "alternative forms of derivative definition"
+    ],
+    "isomorphic_group": "derivative_definition_forms",
+    "topic": "calculus"
+  },
+  {
+    "id": "1_85b3",
+    "stem": "Identify the rhetorical device used in the following sentence: 'The wind whispered secrets through the trees.'",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "Simile"
+      },
+      {
+        "id": "B",
+        "text": "Metaphor"
+      },
+      {
+        "id": "C",
+        "text": "Personification"
+      },
+      {
+        "id": "D",
+        "text": "Hyperbole"
+      }
+    ],
+    "correct_answer": "C",
+    "difficulty": 2,
+    "reference_outline": "Literary Devices - Figurative Language",
+    "knowledge_points": [
+      "Personification",
+      "Figurative language identification"
+    ],
+    "isomorphic_group": "figurative_language_identification",
+    "topic": "english"
+  },
+  {
+    "id": "2_3424",
+    "stem": "Explain the difference between 'affect' and 'effect' in grammatical usage, providing one example for each.",
+    "type": "short_answer",
+    "correct_answer": "'Affect' is typically a verb meaning to influence (e.g., The weather affects my mood). 'Effect' is typically a noun meaning a result (e.g., The medicine had a positive effect).",
+    "difficulty": 3,
+    "reference_outline": "Grammar - Commonly Confused Words",
+    "knowledge_points": [
+      "Affect vs effect",
+      "Parts of speech",
+      "Word usage"
+    ],
+    "isomorphic_group": "commonly_confused_words",
+    "topic": "english"
+  },
+  {
+    "id": "3_f663",
+    "stem": "Which of the following sentences demonstrates correct subject-verb agreement?",
+    "type": "multiple_choice",
+    "options": [
+      {
+        "id": "A",
+        "text": "The group of students are studying."
+      },
+      {
+        "id": "B",
+        "text": "Neither the teacher nor the students is ready."
+      },
+      {
+        "id": "C",
+        "text": "Each of the books have a blue cover."
+      },
+      {
+        "id": "D",
+        "text": "The committee decides tomorrow."
+      }
+    ],
+    "correct_answer": "D",
+    "difficulty": 4,
+    "reference_outline": "Grammar - Subject-Verb Agreement",
+    "knowledge_points": [
+      "Subject-verb agreement",
+      "Collective nouns",
+      "Indefinite pronouns"
+    ],
+    "isomorphic_group": "subject_verb_agreement",
+    "topic": "english"
+  }
+]

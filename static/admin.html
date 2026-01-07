@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Question Bank Generation</title>
+    <link rel="stylesheet" href="style.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <style>
+        .draft-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            background: white;
+            border: 1px solid #eee;
+        }
+        .draft-table th, .draft-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            text-align: left;
+            vertical-align: top;
+        }
+        .draft-table th {
+            background: #f1f3f5;
+            font-weight: 600;
+        }
+        .draft-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .editor-grid .full {
+            grid-column: 1 / -1;
+        }
+        .editor-grid input, .editor-grid select, .editor-grid textarea {
+            width: 100%;
+        }
+        .actions {
+            margin-top: 14px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .panel-header .meta {
+            opacity: 0.8;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container admin-container">
+        <div class="admin-shell">
+            <header>
+                <h1 style="margin: 10px 0 6px;">题库管理</h1>
+                <div class="admin-nav">
+                    <button type="button" class="active" data-panel="manage">管理</button>
+                    <button type="button" data-panel="generate">生成</button>
+                    <button type="button" data-panel="overview">概览</button>
+                    <button type="button" data-panel="freeze">锁定</button>
+                </div>
+                <div class="admin-subtitle">
+                    <a href="index.html">返回学生端</a>
+                </div>
+            </header>
+
+            <main>
+                <div id="status-msg" class="hidden alert-box"></div>
+
+                <section id="panel-manage" class="admin-panel">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <div>
+                                <h3>草稿题库</h3>
+                                <div class="meta">支持搜索、筛选、新建、编辑、删除</div>
+                            </div>
+                            <div class="actions" style="margin-top: 0;">
+                                <button id="load-drafts-btn" class="secondary-btn">刷新列表</button>
+                                <button id="new-draft-btn" class="primary-btn">新建题目</button>
+                            </div>
+                        </div>
+
+                        <div class="editor-grid">
+                            <div>
+                                <label>搜索（题干包含）</label>
+                                <input type="text" id="search-input" placeholder="例如 derivative, limit">
+                            </div>
+                            <div>
+                                <label>Topic</label>
+                                <select id="filter-topic">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Type</label>
+                                <select id="filter-type">
+                                    <option value="">All</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>Difficulty</label>
+                                <select id="filter-difficulty">
+                                    <option value="">All</option>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="draft-list"></div>
+                        <div id="draft-pager" class="actions hidden">
+                            <button id="prev-page-btn" class="secondary-btn">上一页</button>
+                            <div id="page-info" style="align-self:center;"></div>
+                            <button id="next-page-btn" class="secondary-btn">下一页</button>
+                        </div>
+
+                        <div style="margin-top: 14px; border-top: 1px solid rgba(15, 23, 42, 0.08); padding-top: 14px;">
+                            <div class="panel-header">
+                                <div>
+                                    <div style="font-weight: 600;">数据修复</div>
+                                    <div class="meta">补齐 topic、统一 difficulty、修正选择题 options/答案格式</div>
+                                </div>
+                                <div class="actions" style="margin-top: 0;">
+                                    <input type="text" id="default-topic-input" value="Calculus" style="width: 220px;">
+                                    <button id="normalize-btn" class="secondary-btn">一键规范化</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="panel-generate" class="admin-panel hidden">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <div>
+                                <h3>生成题目</h3>
+                                <div class="meta">生成后可预览并保存到草稿题库</div>
+                            </div>
+                        </div>
+                        <div class="editor-grid">
+                            <div class="full">
+                                <label>Topic</label>
+                                <input type="text" id="topic-input" placeholder="例如 Calculus Derivatives, American History">
+                            </div>
+                            <div>
+                                <label>Count</label>
+                                <input type="number" id="count-input" value="3" min="1" max="10">
+                            </div>
+                            <div>
+                                <label>Source</label>
+                                <select id="source-input">
+                                    <option value="ai">AI only (show errors)</option>
+                                    <option value="auto">Auto (AI → Offline fallback)</option>
+                                    <option value="offline">Offline curated (Calculus)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button id="generate-btn" class="primary-btn">生成草稿</button>
+                        </div>
+                    </div>
+
+                    <div id="preview-area" class="admin-card hidden">
+                        <div class="panel-header">
+                            <div>
+                                <h3>预览</h3>
+                                <div class="meta">确认无误后保存</div>
+                            </div>
+                        </div>
+                        <div id="generated-container" class="generated-list"></div>
+                        <div class="actions">
+                            <button id="save-btn" class="primary-btn" style="background-color: #27ae60;">保存到题库</button>
+                            <button id="discard-btn" class="secondary-btn" style="background-color: #c0392b;">丢弃</button>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="panel-overview" class="admin-panel hidden">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <div>
+                                <h3>题库概览</h3>
+                                <div class="meta">题目数量与分类统计</div>
+                            </div>
+                            <div class="actions" style="margin-top: 0;">
+                                <button id="refresh-stats-btn" class="secondary-btn">刷新统计</button>
+                            </div>
+                        </div>
+                        <div id="bank-stats" style="margin-top: 12px;"></div>
+                    </div>
+                </section>
+
+                <section id="panel-freeze" class="admin-panel hidden">
+                    <div class="admin-card">
+                        <div class="panel-header">
+                            <div>
+                                <h3>锁定版本</h3>
+                                <div class="meta">把 questions.json 导入数据库生成可追溯版本</div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <button id="freeze-btn" class="secondary-btn">Freeze Question Bank</button>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div id="draft-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-btn" id="draft-modal-close">&times;</span>
+            <div id="draft-modal-body"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let generatedQuestions = [];
+
+        const navButtons = Array.from(document.querySelectorAll('.admin-nav button[data-panel]'));
+        const panels = {
+            manage: document.getElementById('panel-manage'),
+            generate: document.getElementById('panel-generate'),
+            overview: document.getElementById('panel-overview'),
+            freeze: document.getElementById('panel-freeze')
+        };
+
+        const generateBtn = document.getElementById('generate-btn');
+        const saveBtn = document.getElementById('save-btn');
+        const discardBtn = document.getElementById('discard-btn');
+        const freezeBtn = document.getElementById('freeze-btn');
+        const topicInput = document.getElementById('topic-input');
+        const countInput = document.getElementById('count-input');
+        const sourceInput = document.getElementById('source-input');
+        const previewArea = document.getElementById('preview-area');
+        const container = document.getElementById('generated-container');
+        const statusMsg = document.getElementById('status-msg');
+        const refreshStatsBtn = document.getElementById('refresh-stats-btn');
+        const bankStats = document.getElementById('bank-stats');
+        const normalizeBtn = document.getElementById('normalize-btn');
+        const defaultTopicInput = document.getElementById('default-topic-input');
+        const loadDraftsBtn = document.getElementById('load-drafts-btn');
+        const newDraftBtn = document.getElementById('new-draft-btn');
+        const searchInput = document.getElementById('search-input');
+        const filterTopic = document.getElementById('filter-topic');
+        const filterType = document.getElementById('filter-type');
+        const filterDifficulty = document.getElementById('filter-difficulty');
+        const draftList = document.getElementById('draft-list');
+        const pager = document.getElementById('draft-pager');
+        const prevPageBtn = document.getElementById('prev-page-btn');
+        const nextPageBtn = document.getElementById('next-page-btn');
+        const pageInfo = document.getElementById('page-info');
+        const draftModal = document.getElementById('draft-modal');
+        const draftModalBody = document.getElementById('draft-modal-body');
+        const draftModalClose = document.getElementById('draft-modal-close');
+
+        let draftOffset = 0;
+        const draftLimit = 20;
+        let lastDraftTotal = 0;
+        let lastTopics = [];
+        let lastTypes = [];
+
+        function renderStatsBlock(title, rows) {
+            if (!rows || rows.length === 0) return '';
+            const lines = rows.map(r => `<div style="display:flex; justify-content:space-between; gap:12px;"><div>${r.key}</div><div>${r.count}</div></div>`).join('');
+            return `<div style="margin-top:10px;"><div style="font-weight:600; margin-bottom:6px;">${title}</div><div>${lines}</div></div>`;
+        }
+
+        async function refreshStats() {
+            try {
+                const res = await fetch(`${API_BASE}/admin/draft_stats`, { method: 'GET' });
+                if (!res.ok) throw new Error(await res.text());
+                const data = await res.json();
+                const missing = data.missing || {};
+
+                bankStats.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; gap:12px;">
+                        <div>Total Questions</div>
+                        <div>${data.total ?? 0}</div>
+                    </div>
+                    <div style="margin-top:6px; opacity:0.85;">
+                        Missing fields: topic=${missing.topic ?? 0}, type=${missing.type ?? 0}, difficulty=${missing.difficulty ?? 0}
+                    </div>
+                    ${renderStatsBlock('By Topic', data.by_topic)}
+                    ${renderStatsBlock('By Type', data.by_type)}
+                    ${renderStatsBlock('By Difficulty', data.by_difficulty)}
+                `;
+            } catch (err) {
+                bankStats.innerHTML = `<div style="color:#721c24;">Failed to load stats: ${err.message}</div>`;
+            }
+        }
+
+        function escapeHtml(s) {
+            return String(s ?? '')
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+        }
+
+        function formatMathText(text) {
+            let s = String(text ?? '');
+            s = s
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#39;');
+            s = s.replace(/(\w)\^(\d+)/g, '$1<sup>$2</sup>');
+            s = s.replace(/sqrt\(([^)]+)\)/gi, '&radic;($1)');
+            s = s.replace(/\\sqrt\{([^}]+)\}/gi, '&radic;($1)');
+            return s;
+        }
+
+        function showStatus(msg, type='info') {
+            statusMsg.textContent = msg;
+            statusMsg.className = 'alert-box'; // reset
+            statusMsg.style.backgroundColor = type === 'error' ? '#f8d7da' : '#d4edda';
+            statusMsg.style.color = type === 'error' ? '#721c24' : '#155724';
+            statusMsg.classList.remove('hidden');
+        }
+
+        function setSelectOptions(selectEl, values) {
+            const current = selectEl.value;
+            selectEl.innerHTML = `<option value="">All</option>` + values.map(v => `<option value="${escapeHtml(v)}">${escapeHtml(v)}</option>`).join('');
+            if (values.includes(current)) selectEl.value = current;
+        }
+
+        function buildDraftQuery(offset) {
+            const params = new URLSearchParams();
+            params.set('offset', String(offset));
+            params.set('limit', String(draftLimit));
+            const q = searchInput.value.trim();
+            const topic = filterTopic.value;
+            const type = filterType.value;
+            const diff = filterDifficulty.value;
+            if (q) params.set('q', q);
+            if (topic) params.set('topic', topic);
+            if (type) params.set('type', type);
+            if (diff) params.set('difficulty', diff);
+            return params.toString();
+        }
+
+        async function loadDrafts(offset = 0) {
+            try {
+                const res = await fetch(`${API_BASE}/admin/drafts?${buildDraftQuery(offset)}`, { method: 'GET' });
+                if (!res.ok) throw new Error(await res.text());
+                const data = await res.json();
+                draftOffset = data.offset ?? 0;
+                lastDraftTotal = data.total ?? 0;
+                lastTopics = Array.isArray(data.topics) ? data.topics : [];
+                lastTypes = Array.isArray(data.types) ? data.types : [];
+                setSelectOptions(filterTopic, lastTopics);
+                setSelectOptions(filterType, lastTypes);
+                renderDraftTable(Array.isArray(data.items) ? data.items : []);
+                renderPager();
+            } catch (err) {
+                draftList.innerHTML = `<div style="color:#721c24;">Failed to load drafts: ${escapeHtml(err.message)}</div>`;
+                pager.classList.add('hidden');
+            }
+        }
+
+        function renderPager() {
+            if (lastDraftTotal <= draftLimit) {
+                pager.classList.add('hidden');
+                return;
+            }
+            pager.classList.remove('hidden');
+            const start = draftOffset + 1;
+            const end = Math.min(draftOffset + draftLimit, lastDraftTotal);
+            pageInfo.textContent = `${start}-${end} / ${lastDraftTotal}`;
+            prevPageBtn.disabled = draftOffset <= 0;
+            nextPageBtn.disabled = draftOffset + draftLimit >= lastDraftTotal;
+        }
+
+        function renderDraftTable(items) {
+            if (!items || items.length === 0) {
+                draftList.innerHTML = `<div style="opacity:0.85; margin-top:10px;">No drafts found.</div>`;
+                return;
+            }
+            const rows = items.map(it => {
+                const id = escapeHtml(it.id);
+                const topic = escapeHtml(it.topic || '未分类');
+                const type = escapeHtml(it.type || 'unknown');
+                const diff = escapeHtml(it.difficulty ?? '');
+                let stemText = String(it.stem || '');
+                if (stemText.length > 120) stemText = stemText.slice(0, 120) + '...';
+                const stem = formatMathText(stemText);
+                return `
+                    <tr>
+                        <td>${id}</td>
+                        <td>${topic}</td>
+                        <td>${type}</td>
+                        <td>${diff}</td>
+                        <td>${stem}</td>
+                        <td>
+                            <div class="draft-actions">
+                                <button class="secondary-btn" data-action="edit" data-id="${id}">Edit</button>
+                                <button class="secondary-btn" data-action="delete" data-id="${id}" style="background-color:#c0392b;">Delete</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            draftList.innerHTML = `
+                <table class="draft-table">
+                    <thead>
+                        <tr>
+                            <th style="width:160px;">ID</th>
+                            <th style="width:160px;">Topic</th>
+                            <th style="width:140px;">Type</th>
+                            <th style="width:100px;">Diff</th>
+                            <th>Stem</th>
+                            <th style="width:200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+        }
+
+        function optionsToTextarea(options) {
+            if (!Array.isArray(options)) return '';
+            if (options.length === 0) return '';
+            if (typeof options[0] === 'string') return options.join('\n');
+            return options.map(o => `${o.id ?? ''}\t${o.text ?? ''}`.trim()).join('\n');
+        }
+
+        function parseOptionsTextarea(text) {
+            const lines = String(text ?? '').split('\n').map(l => l.trim()).filter(Boolean);
+            const opts = [];
+            lines.forEach((line, idx) => {
+                const m = line.match(/^([A-Za-z0-9]+)[\.\)\:\-]?\s+(.*)$/);
+                if (m) {
+                    opts.push({ id: m[1], text: m[2] });
+                } else {
+                    const id = String.fromCharCode('A'.charCodeAt(0) + idx);
+                    opts.push({ id, text: line });
+                }
+            });
+            return opts;
+        }
+
+        function renderDraftEditor(draft) {
+            const isNew = !draft;
+            const d = draft || { id: '', stem: '', type: 'short_answer', topic: '', difficulty: 3, reference_outline: '', isomorphic_group: '', knowledge_points: [], correct_answer: '', options: [] };
+            const kp = Array.isArray(d.knowledge_points) ? d.knowledge_points.join(', ') : (d.knowledge_points || '');
+            const optionsText = optionsToTextarea(d.options);
+            draftModalBody.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+                    <h3 style="margin: 6px 0;">${isNew ? '新建题目' : '编辑题目'}</h3>
+                    <div style="opacity:0.8;">ID: ${escapeHtml(d.id || '(auto)')}</div>
+                </div>
+                <div class="editor-grid">
+                    <div>
+                        <label>ID（留空自动生成）</label>
+                        <input id="edit-id" value="${escapeHtml(d.id)}" ${isNew ? '' : 'disabled'} placeholder="${isNew ? 'auto' : ''}">
+                    </div>
+                    <div>
+                        <label>Topic</label>
+                        <input id="edit-topic" value="${escapeHtml(d.topic || '')}">
+                    </div>
+                    <div>
+                        <label>Type</label>
+                        <select id="edit-type">
+                            <option value="short_answer" ${d.type === 'short_answer' ? 'selected' : ''}>short_answer</option>
+                            <option value="multiple_choice" ${d.type === 'multiple_choice' ? 'selected' : ''}>multiple_choice</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Difficulty (1-5)</label>
+                        <input id="edit-difficulty" type="number" min="1" max="5" value="${escapeHtml(d.difficulty ?? 3)}">
+                    </div>
+                    <div class="full">
+                        <label>Stem</label>
+                        <textarea id="edit-stem" rows="3">${escapeHtml(d.stem || '')}</textarea>
+                    </div>
+                    <div id="mc-options-block" class="full" style="${d.type === 'multiple_choice' ? '' : 'display:none;'}">
+                        <label>Options (one per line, can be 'A text' or just 'text')</label>
+                        <textarea id="edit-options" rows="4">${escapeHtml(optionsText)}</textarea>
+                    </div>
+                    <div>
+                        <label>Correct Answer</label>
+                        <input id="edit-correct" value="${escapeHtml(d.correct_answer || '')}">
+                    </div>
+                    <div>
+                        <label>Isomorphic Group</label>
+                        <input id="edit-iso" value="${escapeHtml(d.isomorphic_group || '')}">
+                    </div>
+                    <div class="full">
+                        <label>Reference Outline</label>
+                        <textarea id="edit-reference" rows="2">${escapeHtml(d.reference_outline || '')}</textarea>
+                    </div>
+                    <div class="full">
+                        <label>Knowledge Points (comma separated)</label>
+                        <input id="edit-kp" value="${escapeHtml(kp)}">
+                    </div>
+                </div>
+                <div class="actions">
+                    <button id="save-edit-btn" class="primary-btn">${isNew ? '创建' : '保存'}</button>
+                    <button id="cancel-edit-btn" class="secondary-btn">取消</button>
+                </div>
+            `;
+
+            const typeEl = document.getElementById('edit-type');
+            const mcBlock = document.getElementById('mc-options-block');
+            typeEl.addEventListener('change', () => {
+                mcBlock.style.display = typeEl.value === 'multiple_choice' ? '' : 'none';
+            });
+
+            document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+                closeDraftModal();
+            });
+
+            document.getElementById('save-edit-btn').addEventListener('click', async () => {
+                const payload = {
+                    id: document.getElementById('edit-id').value.trim(),
+                    topic: document.getElementById('edit-topic').value.trim(),
+                    type: document.getElementById('edit-type').value,
+                    difficulty: parseInt(document.getElementById('edit-difficulty').value),
+                    stem: document.getElementById('edit-stem').value.trim(),
+                    correct_answer: document.getElementById('edit-correct').value.trim(),
+                    isomorphic_group: document.getElementById('edit-iso').value.trim(),
+                    reference_outline: document.getElementById('edit-reference').value.trim(),
+                    knowledge_points: document.getElementById('edit-kp').value.split(',').map(s => s.trim()).filter(Boolean)
+                };
+                if (payload.type === 'multiple_choice') {
+                    payload.options = parseOptionsTextarea(document.getElementById('edit-options').value);
+                }
+                if (!payload.stem) {
+                    alert('Stem is required');
+                    return;
+                }
+                try {
+                    let res;
+                    if (isNew) {
+                        if (!payload.id) delete payload.id;
+                        res = await fetch(`${API_BASE}/admin/drafts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    } else {
+                        res = await fetch(`${API_BASE}/admin/drafts/${encodeURIComponent(d.id)}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    }
+                    if (!res.ok) throw new Error(await res.text());
+                    showStatus('Saved.', 'info');
+                    closeDraftModal();
+                    await refreshStats();
+                    await loadDrafts(draftOffset);
+                } catch (err) {
+                    showStatus('Save Error: ' + err.message, 'error');
+                }
+            });
+        }
+
+        async function deleteDraft(id) {
+            if (!confirm(`Delete draft ${id}?`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/admin/drafts/${encodeURIComponent(id)}`, { method: 'DELETE' });
+                if (!res.ok) throw new Error(await res.text());
+                showStatus('Deleted.', 'info');
+                await refreshStats();
+                const nextOffset = Math.min(draftOffset, Math.max(0, lastDraftTotal - 1));
+                await loadDrafts(nextOffset);
+            } catch (err) {
+                showStatus('Delete Error: ' + err.message, 'error');
+            }
+        }
+
+        draftList.addEventListener('click', async (e) => {
+            const btn = e.target.closest('button[data-action]');
+            if (!btn) return;
+            const action = btn.getAttribute('data-action');
+            const id = btn.getAttribute('data-id');
+            if (action === 'delete') {
+                await deleteDraft(id);
+                return;
+            }
+            if (action === 'edit') {
+                try {
+                    const res = await fetch(`${API_BASE}/admin/drafts/${encodeURIComponent(id)}`, { method: 'GET' });
+                    if (!res.ok) throw new Error(await res.text());
+                    const item = await res.json();
+                    renderDraftEditor(item);
+                    openDraftModal();
+                } catch {
+                    renderDraftEditor({ id });
+                    openDraftModal();
+                }
+            }
+        });
+
+        prevPageBtn.addEventListener('click', async () => {
+            await loadDrafts(Math.max(0, draftOffset - draftLimit));
+        });
+        nextPageBtn.addEventListener('click', async () => {
+            await loadDrafts(draftOffset + draftLimit);
+        });
+
+        loadDraftsBtn.addEventListener('click', async () => {
+            await loadDrafts(0);
+        });
+
+        newDraftBtn.addEventListener('click', () => {
+            renderDraftEditor(null);
+            openDraftModal();
+        });
+
+        [searchInput, filterTopic, filterType, filterDifficulty].forEach(el => {
+            el.addEventListener('change', () => loadDrafts(0));
+            el.addEventListener('input', () => {
+                if (el === searchInput) {
+                    clearTimeout(el._t);
+                    el._t = setTimeout(() => loadDrafts(0), 250);
+                }
+            });
+        });
+
+        normalizeBtn.addEventListener('click', async () => {
+            const t = defaultTopicInput.value.trim() || 'Calculus';
+            if (!confirm(`Normalize existing drafts with default topic "${t}"? This will rewrite questions.json.`)) return;
+            try {
+                const res = await fetch(`${API_BASE}/admin/drafts/normalize?default_topic=${encodeURIComponent(t)}`, { method: 'POST' });
+                if (!res.ok) throw new Error(await res.text());
+                const data = await res.json();
+                showStatus(`Normalized. changed=${data.changed}, topic_filled=${data.topic_filled}`, 'info');
+                await refreshStats();
+                await loadDrafts(0);
+            } catch (err) {
+                showStatus('Normalize Error: ' + err.message, 'error');
+            }
+        });
+
+        function openDraftModal() {
+            draftModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDraftModal() {
+            draftModal.classList.add('hidden');
+            draftModalBody.innerHTML = '';
+            document.body.style.overflow = '';
+        }
+
+        draftModalClose.addEventListener('click', closeDraftModal);
+        draftModal.addEventListener('click', (e) => {
+            if (e.target === draftModal) closeDraftModal();
+        });
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !draftModal.classList.contains('hidden')) closeDraftModal();
+        });
+
+        function showPanel(name) {
+            Object.entries(panels).forEach(([k, el]) => {
+                if (!el) return;
+                if (k === name) el.classList.remove('hidden');
+                else el.classList.add('hidden');
+            });
+            navButtons.forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-panel') === name);
+            });
+            if (name === 'overview') refreshStats();
+            if (name === 'manage') loadDrafts(draftOffset);
+        }
+
+        navButtons.forEach(btn => {
+            btn.addEventListener('click', () => showPanel(btn.getAttribute('data-panel')));
+        });
+
+        generateBtn.addEventListener('click', async () => {
+            const topic = topicInput.value.trim();
+            const count = parseInt(countInput.value);
+
+            if (!topic) return alert('Enter a topic');
+
+            generateBtn.disabled = true;
+            generateBtn.textContent = "Generating (DeepSeek)...";
+            showStatus('Calling AI Service... this may take 10-30 seconds.');
+
+            try {
+                const source = sourceInput.value;
+                const response = await fetch(`${API_BASE}/admin/generate_drafts?topic=${encodeURIComponent(topic)}&count=${count}&source=${encodeURIComponent(source)}`, {
+                    method: 'POST'
+                });
+                
+                if (!response.ok) {
+                    const errText = await response.text();
+                    throw new Error(errText || 'Generation failed');
+                }
+
+                const data = await response.json();
+                if (!Array.isArray(data) || data.length === 0) {
+                    throw new Error('AI returned no valid questions.');
+                }
+
+                generatedQuestions = data;
+                renderPreview();
+                showStatus(`Generated ${data.length} questions. Review below.`);
+                previewArea.classList.remove('hidden');
+
+            } catch (err) {
+                console.error(err);
+                showStatus('Error: ' + err.message, 'error');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.textContent = "Generate Drafts";
+            }
+        });
+
+        function renderPreview() {
+            container.innerHTML = '';
+            generatedQuestions.forEach((q, idx) => {
+                const div = document.createElement('div');
+                div.className = 'generated-item';
+                div.innerHTML = `
+                    <div><strong>Q${idx+1}:</strong> ${formatMathText(q.stem)}</div>
+                    <div><em>Type:</em> ${q.type} | <em>Diff:</em> ${q.difficulty}</div>
+                    <div><em>Answer:</em> ${q.correct_answer}</div>
+                    <div><em>Isomorphic Group:</em> ${q.isomorphic_group || 'None'}</div>
+                `;
+                container.appendChild(div);
+            });
+            if (window.MathJax && MathJax.typesetPromise) {
+                MathJax.typesetPromise();
+            }
+        }
+
+        saveBtn.addEventListener('click', async () => {
+            if (!confirm('Append these questions to questions.json?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/save_drafts`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(generatedQuestions)
+                });
+
+                if (!response.ok) throw new Error('Save failed');
+                
+                const res = await response.json();
+                showStatus(`Success! Added ${res.added_count} questions to Draft Bank.`);
+                previewArea.classList.add('hidden');
+                generatedQuestions = [];
+                await refreshStats();
+                await loadDrafts(0);
+                showPanel('manage');
+
+            } catch (err) {
+                showStatus('Save Error: ' + err.message, 'error');
+            }
+        });
+
+        discardBtn.addEventListener('click', () => {
+            generatedQuestions = [];
+            previewArea.classList.add('hidden');
+            showStatus('Drafts discarded.');
+        });
+
+        freezeBtn.addEventListener('click', async () => {
+            if (!confirm('This will LOCK the current questions.json into a new database version. Continue?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/admin/freeze`, { method: 'POST' });
+                if (!response.ok) throw new Error('Freeze failed');
+                const res = await response.json();
+                alert(`Question Bank Frozen!\nVersion ID: ${res.version_id}\nQuestions: ${res.count}`);
+            } catch (err) {
+                alert('Freeze Error: ' + err.message);
+            }
+        });
+
+        refreshStatsBtn.addEventListener('click', refreshStats);
+        refreshStats();
+        loadDrafts(0);
+        showPanel('manage');
+    </script>
+</body>
+</html>

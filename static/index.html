@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Research Experiment</title>
+    <link rel="stylesheet" href="style.css">
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ErrorAl</h1>
+        </header>
+
+        <main id="app">
+            <!-- Login View -->
+            <div id="login-view">
+                <h2>Welcome Student</h2>
+                <div class="form-group">
+                    <label for="student-id">Enter Student ID (Anonymous Code):</label>
+                    <input type="text" id="student-id" placeholder="e.g., S12345">
+                </div>
+                
+                <div class="form-group">
+                     <label>Test Mode:</label>
+                     <select id="test-mode">
+                         <option value="fixed">Fixed Paper</option>
+                         <option value="equivalent">Equivalent (Randomized)</option>
+                     </select>
+                </div>
+
+                <div id="equivalent-options" class="hidden">
+                    <div class="form-group">
+                        <label>Random Seed (Optional):</label>
+                        <input type="number" id="random-seed" placeholder="Enter integer seed">
+                    </div>
+                </div>
+
+                <button id="start-btn" class="primary-btn">Start Test</button>
+            </div>
+
+            <!-- Test View -->
+            <div id="test-view" class="hidden">
+                <div id="questions-container">
+                    <!-- Questions will be injected here -->
+                </div>
+                <button id="submit-btn" class="primary-btn">Submit Answers</button>
+            </div>
+
+            <!-- Results View -->
+            <div id="results-view" class="hidden">
+                <h2>Test Results</h2>
+                
+                <div id="alerts-container"></div>
+
+                <div id="score-summary">
+                    <!-- Score -->
+                </div>
+                <div id="feedback-container">
+                    <!-- Detailed feedback -->
+                </div>
+                <button id="restart-btn" class="secondary-btn">Start New Test</button>
+            </div>
+
+            <!-- Practice Modal -->
+            <div id="practice-modal" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-btn">&times;</span>
+                    <h3>Isomorphic Practice</h3>
+                    <div id="practice-question-container"></div>
+                    <div id="practice-feedback" class="hidden"></div>
+                    <button id="submit-practice-btn" class="primary-btn">Submit Practice</button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+    <script src="script.js?v=2"></script>
+</body>
+</html>
